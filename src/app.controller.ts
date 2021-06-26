@@ -8,7 +8,7 @@ export class AppController {
 
   @Get()
   getHello(): string {
-	console.log(new Feature())
-    return "hiya"
+	const f = new Feature('Greetings!')
+    return f.original
   }
 }
