@@ -1,1 +1,1 @@
-web: nest start
+web: ./node_modules/.bin/nest start
