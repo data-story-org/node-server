@@ -5,11 +5,31 @@ import {
   BootPayload,
   Server,
   SerializedDiagram,
+  Node,
 } from '@data-story-org/core';
 import { stringify } from 'flatted';
 
 export class RunDiagramDTO {
   model: SerializedDiagram;
+}
+
+class CustomInspectNode extends Node {
+  constructor(options = {}) {
+    super({
+      // Defaults
+      name: 'CustomInspectNode',
+      summary: 'Display features in a table',
+      category: 'Workflow',
+      defaultInPorts: ['Input'],
+      defaultOutPorts: [],
+      // Explicitly configured
+      ...options,
+    });
+  }
+
+  async run() {
+    this.features = this.input();
+  }
 }
 
 @Controller()
@@ -26,7 +46,9 @@ export class AppController {
 
   @Post('boot')
   async postBoot(): Promise<BootPayload> {
-    return await this.storyServer.boot();
+    const bootData = await this.storyServer.boot([CustomInspectNode]);
+
+    return bootData;
   }
 
   @Post('run')
