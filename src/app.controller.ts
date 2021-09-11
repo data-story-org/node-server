@@ -8,27 +8,40 @@ import {
   Node,
 } from '@data-story-org/core';
 import { stringify } from 'flatted';
+import axios from 'axios';
 
 export class RunDiagramDTO {
   model: SerializedDiagram;
 }
 
-class CustomInspectNode extends Node {
+class BitcoinPriceNode extends Node {
   constructor(options = {}) {
     super({
       // Defaults
-      name: 'CustomInspectNode',
-      summary: 'Display features in a table',
+      name: 'BitcoinPriceNode',
+      summary: 'fetches latest BTC price',
       category: 'Workflow',
       defaultInPorts: ['Input'],
-      defaultOutPorts: [],
+      defaultOutPorts: ['Output'],
       // Explicitly configured
       ...options,
     });
   }
 
   async run() {
-    this.features = this.input();
+    const url = 'https://api.coingecko.com/api/v3/simple/price';
+
+    const response = await axios.get(url, {
+      params: {
+        ids: 'bitcoin',
+        vs_currencies: 'usd',
+      },
+    });
+
+    this.output([
+      ...this.input(),
+      new Feature({ bitcoin: response.data.bitcoin }),
+    ]);
   }
 }
 
@@ -46,7 +59,7 @@ export class AppController {
 
   @Post('boot')
   async postBoot(): Promise<BootPayload> {
-    const bootData = await this.storyServer.boot([CustomInspectNode]);
+    const bootData = await this.storyServer.boot([BitcoinPriceNode]);
 
     return bootData;
   }
