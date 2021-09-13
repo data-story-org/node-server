@@ -17,7 +17,12 @@ export class RunDiagramDTO {
 
 @Controller()
 export class AppController {
-  storyServer: Server = new Server();
+  storyServer: Server = new Server(
+    {},
+    {
+      downloaderFunction: DataSaver,
+    },
+  );
 
   constructor(private readonly appService: AppService) {}
 
