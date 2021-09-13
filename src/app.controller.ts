@@ -1,48 +1,18 @@
 import { Controller, Get, Post, Body } from '@nestjs/common';
-import { AppService } from './app.service';
 import {
   Feature,
   BootPayload,
   Server,
   SerializedDiagram,
-  Node,
 } from '@data-story-org/core';
 import { stringify } from 'flatted';
-import axios from 'axios';
+
+import { AppService } from './app.service';
+import { BitcoinPriceNode } from './nodes';
+import { DataSaver } from './data/DataSaver';
 
 export class RunDiagramDTO {
   model: SerializedDiagram;
-}
-
-class BitcoinPriceNode extends Node {
-  constructor(options = {}) {
-    super({
-      // Defaults
-      name: 'BitcoinPriceNode',
-      summary: 'fetches latest BTC price',
-      category: 'Workflow',
-      defaultInPorts: ['Input'],
-      defaultOutPorts: ['Output'],
-      // Explicitly configured
-      ...options,
-    });
-  }
-
-  async run() {
-    const url = 'https://api.coingecko.com/api/v3/simple/price';
-
-    const response = await axios.get(url, {
-      params: {
-        ids: 'bitcoin',
-        vs_currencies: 'usd',
-      },
-    });
-
-    this.output([
-      ...this.input(),
-      new Feature({ bitcoin: response.data.bitcoin }),
-    ]);
-  }
 }
 
 @Controller()
